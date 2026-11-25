@@ -614,7 +614,7 @@
       <div>
         <span class="hero-tag">Project 1: Autonomous Micromouse</span>
         <h1>Bill of Materials &amp; Cost Breakdown</h1>
-        <p>Hardware Path: ATmega328P (Arduino Uno R3) + L298N Dual H-Bridge + HC-SR04 Ultrasonic Sensor. All prices shown below are based strictly on the final orange Order Total from each checkout receipt.</p>
+        <p>Hardware Path: ATmega328P (Arduino Uno R3) + L298N Dual H-Bridge + HC-SR04 Ultrasonic Sensor. All prices shown below are based strictly on the final Order Total from each checkout receipt.</p>
       </div>
       <div class="hero-actions">
         <button class="btn btn-dark" onclick="window.print()">Print / Save as PDF</button>
@@ -647,7 +647,7 @@
 
     <!-- Technical & Inventory Notes -->
     <div class="notice">
-      <strong>Group Notes:</strong> (1) All prices rely strictly on the <strong>orange Order Total</strong> paid at checkout (after vouchers and shipping). (2) The purchased sensor is a 4-pin <strong>HC-SR04</strong> instead of the 3-pin PING 28018 in the lab guide, so we will update the Arduino code for separate Trig and Echo pins. (3) Click any receipt screenshot to zoom in.
+      <strong>Group Notes:</strong> (1) All prices rely strictly on the <strong>Order Total</strong> paid at checkout (after vouchers and shipping). (2) The purchased sensor is a 4-pin <strong>HC-SR04</strong> instead of the 3-pin PING 28018 in the lab guide, so we will update the Arduino code for separate Trig and Echo pins. (3) Click any receipt screenshot to zoom in.
     </div>
 
     <!-- Orders Section -->
@@ -1092,7 +1092,7 @@
               <td class="text-right">&#8369;162.00</td>
             </tr>
             <tr class="total-row">
-              <td colspan="2">Grand Total (Sum of Orange Order Totals)</td>
+              <td colspan="2">Grand Total (Sum of Order Totals)</td>
               <td class="text-right">&#8369;611.00</td>
             </tr>
           </tbody>
@@ -1125,6 +1125,9 @@
 
   <script>
     const GRAND_TOTAL = 611;
+    const MEMBER_NAMES = ["Chloe", "Vian", "Xhane", "Yuri"];
+    const DB_URL = "https://micromouse-bom-default-rtdb.asia-southeast1.firebasedatabase.app/payments.json";
+    let paidStatus = {};
 
     function markMissing(img) {
       const box = img.closest('.screenshot-box');
@@ -1159,15 +1162,31 @@
       }
     });
 
-    function togglePaid(btn) {
-      if (btn.classList.contains('status-unpaid')) {
-        btn.classList.remove('status-unpaid');
-        btn.classList.add('status-paid');
-        btn.textContent = 'Paid';
-      } else {
-        btn.classList.remove('status-paid');
-        btn.classList.add('status-unpaid');
-        btn.textContent = 'Unpaid';
+    async function loadPayments() {
+      try {
+        const res = await fetch(DB_URL);
+        const data = await res.json();
+        if (data) {
+          paidStatus = data;
+          updateSplit();
+        }
+      } catch (err) {
+        console.error("Could not load payment status:", err);
+      }
+    }
+
+    async function togglePaid(idx) {
+      paidStatus[idx] = !paidStatus[idx];
+      updateSplit();
+
+      try {
+        await fetch(DB_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(paidStatus)
+        });
+      } catch (err) {
+        console.error("Could not save payment status:", err);
       }
     }
 
@@ -1180,18 +1199,25 @@
       const list = document.getElementById('memberList');
       list.innerHTML = '';
       for (let i = 1; i <= count; i++) {
+        const idx = i - 1;
+        const name = MEMBER_NAMES[idx] || `Member ${i}`;
+        const isPaid = Boolean(paidStatus[idx]);
+        const btnClass = isPaid ? 'status-paid' : 'status-unpaid';
+        const btnText = isPaid ? 'Paid' : 'Unpaid';
+
         const li = document.createElement('li');
         li.className = 'member-item';
         li.innerHTML = `
-          <span><strong>Member ${i}</strong></span>
+          <span><strong>${name}</strong></span>
           <span>&#8369;${share}</span>
-          <button class="status-btn status-unpaid" onclick="togglePaid(this)">Unpaid</button>
+          <button class="status-btn ${btnClass}" onclick="togglePaid(${idx})">${btnText}</button>
         `;
         list.appendChild(li);
       }
     }
 
     updateSplit();
+    loadPayments();
   </script>
 </body>
 </html>
