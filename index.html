@@ -53,11 +53,6 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       margin-bottom: 24px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
     }
 
     .hero-tag {
@@ -84,32 +79,7 @@
     .hero p {
       color: #cbd5e1;
       font-size: 14px;
-      max-width: 620px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .btn-dark {
-      background: #1e293b;
-      color: #f8fafc;
-    }
-
-    .btn-dark:hover {
-      background: #334155;
-      border-color: #475569;
+      max-width: 680px;
     }
 
     /* KPI Summary Grid */
@@ -597,7 +567,7 @@
         color: #0f172a;
         padding: 0;
       }
-      .hero-actions, .zoom-badge {
+      .zoom-badge {
         display: none;
       }
       .order-card, .card, .kpi-card {
@@ -615,9 +585,6 @@
         <span class="hero-tag">Project 1: Autonomous Micromouse</span>
         <h1>Bill of Materials &amp; Cost Breakdown</h1>
         <p>Hardware Path: ATmega328P (Arduino Uno R3) + L298N Dual H-Bridge + HC-SR04 Ultrasonic Sensor. All prices shown below are based strictly on the final Order Total from each checkout receipt.</p>
-      </div>
-      <div class="hero-actions">
-        <button class="btn btn-dark" onclick="window.print()">Print / Save as PDF</button>
       </div>
     </header>
 
@@ -908,7 +875,7 @@
         <div class="screenshot-box has-image" onclick="openZoom(this)">
           <img
             src="images/order5.png"
-            alt="Order #5 - HC-SR04 Sensor with Bracket (&#8369;109.00)"
+            alt="Order #5 - HC-SR04 Sensor with Bracket &amp; 20pcs Ceramic Capacitors (&#8369;109.00)"
             onerror="markMissing(this)"
           />
           <span class="zoom-badge">Click to zoom</span>
